@@ -18,15 +18,14 @@ SP =~ 0.937*SP19 + 0.893*SP17 + 0.765*SP18 + 0.704*SP21 +
       0.701*SP16 + 0.697*SP20 + 0.586*SP15 + 0.549*SP14 + 
       0.546*SP22
 
-# Latent variable variances
+# Latent variable co(variances)
 TP~~1*TP
 CP~~1*CP
 SP~~1*SP
 
-# Latent variable covariances
-TP ~ 0.77*CP
-TP ~ 0.48*SP
-CP ~ 0.72*SP
+TP ~~ 0.77*CP
+TP ~~ 0.48*SP
+CP ~~ 0.72*SP
 
 # Item errors
  TP7~~(1-0.939^2)*TP7
@@ -66,6 +65,8 @@ SP15~~(1-0.586^2)*SP15
 SP14~~(1-0.549^2)*SP14
 SP22~~(1-0.546^2)*SP22
 "
+
+###
 
 analyzeModel <-"
 TP =~  TP7 + TP3 + TP2 + TP8 + 
@@ -129,7 +130,78 @@ SP =~ SP19 + SP17 + SP18 + SP21 +
 # SP15~~SP15
 # SP14~~SP14
 # SP22~~SP22
+
 "
+
+###
+
+wrongModel <-"
+TP =~  c1*TP7 + c1*TP3 + c1*TP2 + c1*TP8 + 
+       c1*TP13 + c1*TP1 + c1*TP6 +
+       c1*TP10 + c1*TP5 + c1*TP4 + 
+       c1*TP11 + c1*TP9 + c1*TP12
+
+CP =~ c2*CP29 + c2*CP25 + c2*CP23 + c2*CP31 + 
+      c2*CP26 + c2*CP24 + c2*CP33 + 
+      c2*CP30 + c2*CP28 + c2*CP34 + c2*CP32 + 
+      c2*CP27
+
+SP =~ c3*SP19 + c3*SP17 + c3*SP18 + c3*SP21 + 
+      c3*SP16 + c3*SP20 + c3*SP15 + c3*SP14 + 
+      c3*SP22
+
+# # Latent variable variances
+# TP~~1*TP
+# CP~~1*CP
+# SP~~1*SP
+# 
+# # Latent variable covariances
+# TP ~ CP
+# TP ~ SP
+# CP ~ SP
+# 
+# # Item errors
+#  TP7~~TP7
+#  TP3~~TP3
+#  TP2~~TP2
+#  TP8~~TP8
+# TP13~~TP13
+#  TP1~~TP1
+#  TP6~~TP6
+# TP10~~TP10
+#  TP5~~TP5
+#  TP4~~TP4
+# TP11~~TP11
+#  TP9~~TP9
+# TP12~~TP12  
+# 
+# CP29~~CP29
+# CP25~~CP25
+# CP23~~CP23
+# CP31~~CP31
+# CP26~~CP26
+# CP24~~CP24
+# CP33~~CP33
+# CP30~~CP30
+# CP28~~CP28
+# CP34~~CP34
+# CP32~~CP32
+# CP27~~CP27
+# 
+# SP19~~SP19
+# SP17~~SP17
+# SP18~~SP18
+# SP21~~SP21
+# SP16~~SP16
+# SP20~~SP20
+# SP15~~SP15
+# SP14~~SP14
+# SP22~~SP22
+
+"
+
+###############################################################
+
 data <- simulateData(popModel, sample.nobs = 200)
 names(data)
 head(data)
@@ -140,14 +212,18 @@ summary(sim.results)
 # Use simsem to simulate and analyze multiple data sets
 library(simsem)
 Output1 <- sim(1000, analyzeModel, n=200, generate=popModel,
-               lavaanfun = "cfa", std.lv=TRUE)
+               lavaanfun = "cfa", std.lv=TRUE,
+               multicore=TRUE)
 
 options(scipen=9999)
 summary(Output1)
 summaryConverge(Output1)
 summaryFit(Output1)
 summaryParam(Output1)
-getCutoff(Output1, alpha=0.05)
+cutoff<-getCutoff(Output1, alpha=0.05)
+cutoff[4]<-0.01
+cutoff
+getPowerFit(Output1, cutoff=cutoff, nVal=200)
 plotCutoff(Output1)
 
 # Varying sample size and plotting power as a function 
@@ -157,11 +233,27 @@ Output2 <- sim(NULL, analyzeModel, n=50:200, generate=popModel,
                lavaanfun = "cfa", std.lv=TRUE)
 summary(Output2)
 
-powTable2 <- getPower(Output2, alpha=.05)
-powTable2
+alpha=.0001
 
-findPower(powTable2, "N", power=0.80)
+powTable2 <- getPower(Output2, alpha=alpha)
+head(powTable2)
+tail(powTable2)
 
-plotPower(Output2, powerParam = "SP=~SP22", 
-          alpha=.05)
+findPower(powTable2, "N", power=0.95)
+
+plotPower(Output2, powerParam = "CP=~CP28", 
+          alpha=alpha, useContour=TRUE)
+
+plotPower(Output2, powerParam = "CFI", 
+          alpha=alpha, useContour=TRUE)
+
+####################################################
+
+Output3 <- sim(NULL, wrongModel, n=50:200, generate=popModel,
+               lavaanfun = "cfa", std.lv=TRUE)
+summary(Output3)
+
+
+
+
 
