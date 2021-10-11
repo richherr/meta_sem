@@ -213,7 +213,7 @@ summary(sim.results)
 library(simsem)
 Output1 <- sim(1000, analyzeModel, n=200, generate=popModel,
                lavaanfun = "cfa", std.lv=TRUE,
-               multicore=TRUE)
+               multicore=FALSE)
 
 options(scipen=9999)
 summary(Output1)
