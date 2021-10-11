@@ -89,9 +89,9 @@ SP =~ SP19 + SP17 + SP18 + SP21 +
 # SP~~1*SP
 # 
 # # Latent variable covariances
-# TP ~ CP
-# TP ~ SP
-# CP ~ SP
+# TP ~~ CP
+# TP ~~ SP
+# CP ~~ SP
 # 
 # # Item errors
 #  TP7~~TP7
