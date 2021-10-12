@@ -90,9 +90,9 @@ CP~~1*CP
 SP~~1*SP
 
 # Latent variable covariances
-TP ~~ CP
-TP ~~ SP
-CP ~~ SP
+TP ~~ 0*CP
+TP ~~ 0*SP
+CP ~~ 0*SP
 
 # Item errors
  TP7~~TP7
@@ -212,7 +212,20 @@ sim.results <- cfa(analyzeModel, data = data, std.lv = TRUE)
 summary(sim.results)
 fitmeasures(sim.results)
 
-# Use simsem to simulate and analyze multiple data sets
+############################################################
+
+Output_analyze <- sim(1000, analyzeModel, n=200, generate=popModel,
+                      lavaanfun = "cfa", std.lv=TRUE,
+                      multicore=TRUE)
+
+options(scipen=9999)
+summary(Output_analyze)
+summaryConverge(Output_analyze)
+summaryFit(Output_analyze)
+summaryParam(Output_analyze)
+
+########################################################
+
 library(simsem)
 Output1 <- sim(1000, Ho_Model, n=200, generate=popModel,
                lavaanfun = "cfa", std.lv=TRUE,
@@ -223,20 +236,6 @@ summary(Output1)
 summaryConverge(Output1)
 summaryFit(Output1)
 summaryParam(Output1)
-
-############################################################
-
-Output_analyze <- sim(1000, analyzeModel, n=200, generate=popModel,
-               lavaanfun = "cfa", std.lv=TRUE,
-               multicore=TRUE)
-
-options(scipen=9999)
-summary(Output_analyze)
-summaryConverge(Output_analyze)
-summaryFit(Output_analyze)
-summaryParam(Output_analyze)
-
-
 
 ############################################################
 
@@ -273,6 +272,23 @@ tail(powTable3)
 
 plotPower(Output3, powerParam = "TP~SP", 
           alpha=alpha, useContour=TRUE)
+
+
+####################################################
+
+library(semTools)
+power.samp.size<-findRMSEApower(rmsea0=0.05, 
+                                rmseaA=0.08, 
+               df=527, 
+               n=50:200, 
+               alpha = 0.05, 
+               group = 1)
+power.samp.size
+
+plot(50:200, power.samp.size, type="l")
+
+data.frame(50:200, power.samp.size)
+
 
 
 
