@@ -84,15 +84,10 @@ SP =~ SP19 + SP17 + SP18 + SP21 +
       SP16 + SP20 + SP15 + SP14 + 
       SP22
 
-# Latent variable variances
-TP~~1*TP
-CP~~1*CP
-SP~~1*SP
-
 # Latent variable covariances
-TP ~~ 0*CP
-TP ~~ 0*SP
-CP ~~ 0*SP
+TP ~~ CP
+TP ~~ SP
+CP ~~ SP
 
 # Item errors
  TP7~~TP7
@@ -150,11 +145,6 @@ CP =~ c2*CP29 + c2*CP25 + c2*CP23 + c2*CP31 +
 SP =~ c3*SP19 + c3*SP17 + c3*SP18 + c3*SP21 + 
       c3*SP16 + c3*SP20 + c3*SP15 + c3*SP14 + 
       c3*SP22
-
-# Latent variable variances
-TP~~1*TP
-CP~~1*CP
-SP~~1*SP
 
 # Latent variable covariances
 TP ~ CP
@@ -275,11 +265,18 @@ plotPower(Output3, powerParam = "TP~SP",
 
 
 ####################################################
+#
+# 34 items
+# 68 parameters (loadings and item errors)
+#  3 parameters (latent variable covariances)
+# 
+# (34*(34+1))/2 - (68 - 3) = 524 df
+
 
 library(semTools)
 power.samp.size<-findRMSEApower(rmsea0=0.05, 
                                 rmseaA=0.08, 
-               df=527, 
+               df=524, 
                n=50:200, 
                alpha = 0.05, 
                group = 1)
