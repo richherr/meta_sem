@@ -1,3 +1,4 @@
+# https://sjak.shinyapps.io/power4SEM/
 # Simulting SEM models;  Plotting Power Curves
 
 library(lavaan)
@@ -83,59 +84,59 @@ SP =~ SP19 + SP17 + SP18 + SP21 +
       SP16 + SP20 + SP15 + SP14 + 
       SP22
 
-# # Latent variable variances
-# TP~~1*TP
-# CP~~1*CP
-# SP~~1*SP
-# 
-# # Latent variable covariances
-# TP ~~ CP
-# TP ~~ SP
-# CP ~~ SP
-# 
-# # Item errors
-#  TP7~~TP7
-#  TP3~~TP3
-#  TP2~~TP2
-#  TP8~~TP8
-# TP13~~TP13
-#  TP1~~TP1
-#  TP6~~TP6
-# TP10~~TP10
-#  TP5~~TP5
-#  TP4~~TP4
-# TP11~~TP11
-#  TP9~~TP9
-# TP12~~TP12  
-# 
-# CP29~~CP29
-# CP25~~CP25
-# CP23~~CP23
-# CP31~~CP31
-# CP26~~CP26
-# CP24~~CP24
-# CP33~~CP33
-# CP30~~CP30
-# CP28~~CP28
-# CP34~~CP34
-# CP32~~CP32
-# CP27~~CP27
-# 
-# SP19~~SP19
-# SP17~~SP17
-# SP18~~SP18
-# SP21~~SP21
-# SP16~~SP16
-# SP20~~SP20
-# SP15~~SP15
-# SP14~~SP14
-# SP22~~SP22
+# Latent variable variances
+TP~~1*TP
+CP~~1*CP
+SP~~1*SP
+
+# Latent variable covariances
+TP ~~ CP
+TP ~~ SP
+CP ~~ SP
+
+# Item errors
+ TP7~~TP7
+ TP3~~TP3
+ TP2~~TP2
+ TP8~~TP8
+TP13~~TP13
+ TP1~~TP1
+ TP6~~TP6
+TP10~~TP10
+ TP5~~TP5
+ TP4~~TP4
+TP11~~TP11
+ TP9~~TP9
+TP12~~TP12
+
+CP29~~CP29
+CP25~~CP25
+CP23~~CP23
+CP31~~CP31
+CP26~~CP26
+CP24~~CP24
+CP33~~CP33
+CP30~~CP30
+CP28~~CP28
+CP34~~CP34
+CP32~~CP32
+CP27~~CP27
+
+SP19~~SP19
+SP17~~SP17
+SP18~~SP18
+SP21~~SP21
+SP16~~SP16
+SP20~~SP20
+SP15~~SP15
+SP14~~SP14
+SP22~~SP22
 
 "
 
 ###
 
-wrongModel <-"
+Ho_Model <-"
 TP =~  c1*TP7 + c1*TP3 + c1*TP2 + c1*TP8 + 
        c1*TP13 + c1*TP1 + c1*TP6 +
        c1*TP10 + c1*TP5 + c1*TP4 + 
@@ -150,57 +151,58 @@ SP =~ c3*SP19 + c3*SP17 + c3*SP18 + c3*SP21 +
       c3*SP16 + c3*SP20 + c3*SP15 + c3*SP14 + 
       c3*SP22
 
-# # Latent variable variances
-# TP~~1*TP
-# CP~~1*CP
-# SP~~1*SP
-# 
-# # Latent variable covariances
-# TP ~ CP
-# TP ~ SP
-# CP ~ SP
-# 
-# # Item errors
-#  TP7~~TP7
-#  TP3~~TP3
-#  TP2~~TP2
-#  TP8~~TP8
-# TP13~~TP13
-#  TP1~~TP1
-#  TP6~~TP6
-# TP10~~TP10
-#  TP5~~TP5
-#  TP4~~TP4
-# TP11~~TP11
-#  TP9~~TP9
-# TP12~~TP12  
-# 
-# CP29~~CP29
-# CP25~~CP25
-# CP23~~CP23
-# CP31~~CP31
-# CP26~~CP26
-# CP24~~CP24
-# CP33~~CP33
-# CP30~~CP30
-# CP28~~CP28
-# CP34~~CP34
-# CP32~~CP32
-# CP27~~CP27
-# 
-# SP19~~SP19
-# SP17~~SP17
-# SP18~~SP18
-# SP21~~SP21
-# SP16~~SP16
-# SP20~~SP20
-# SP15~~SP15
-# SP14~~SP14
-# SP22~~SP22
+# Latent variable variances
+TP~~1*TP
+CP~~1*CP
+SP~~1*SP
 
+# Latent variable covariances
+TP ~ CP
+TP ~ SP
+CP ~ SP
+
+# Item errors
+ TP7~~TP7
+ TP3~~TP3
+ TP2~~TP2
+ TP8~~TP8
+TP13~~TP13
+ TP1~~TP1
+ TP6~~TP6
+TP10~~TP10
+ TP5~~TP5
+ TP4~~TP4
+TP11~~TP11
+ TP9~~TP9
+TP12~~TP12
+
+CP29~~CP29
+CP25~~CP25
+CP23~~CP23
+CP31~~CP31
+CP26~~CP26
+CP24~~CP24
+CP33~~CP33
+CP30~~CP30
+CP28~~CP28
+CP34~~CP34
+CP32~~CP32
+CP27~~CP27
+
+SP19~~SP19
+SP17~~SP17
+SP18~~SP18
+SP21~~SP21
+SP16~~SP16
+SP20~~SP20
+SP15~~SP15
+SP14~~SP14
+SP22~~SP22
 "
 
 ###############################################################
+#
+# Population Model
 
 data <- simulateData(popModel, sample.nobs = 200)
 names(data)
@@ -208,23 +210,35 @@ head(data)
 
 sim.results <- cfa(analyzeModel, data = data, std.lv = TRUE)
 summary(sim.results)
+fitmeasures(sim.results)
 
 # Use simsem to simulate and analyze multiple data sets
 library(simsem)
-Output1 <- sim(1000, analyzeModel, n=200, generate=popModel,
+Output1 <- sim(1000, Ho_Model, n=200, generate=popModel,
                lavaanfun = "cfa", std.lv=TRUE,
-               multicore=FALSE)
+               multicore=TRUE)
 
 options(scipen=9999)
 summary(Output1)
 summaryConverge(Output1)
 summaryFit(Output1)
 summaryParam(Output1)
-cutoff<-getCutoff(Output1, alpha=0.05)
-cutoff[4]<-0.01
-cutoff
-getPowerFit(Output1, cutoff=cutoff, nVal=200)
-plotCutoff(Output1)
+
+############################################################
+
+Output_analyze <- sim(1000, analyzeModel, n=200, generate=popModel,
+               lavaanfun = "cfa", std.lv=TRUE,
+               multicore=TRUE)
+
+options(scipen=9999)
+summary(Output_analyze)
+summaryConverge(Output_analyze)
+summaryFit(Output_analyze)
+summaryParam(Output_analyze)
+
+
+
+############################################################
 
 # Varying sample size and plotting power as a function 
 # of sample size
@@ -233,7 +247,7 @@ Output2 <- sim(NULL, analyzeModel, n=50:200, generate=popModel,
                lavaanfun = "cfa", std.lv=TRUE)
 summary(Output2)
 
-alpha=.0001
+alpha=.05
 
 powTable2 <- getPower(Output2, alpha=alpha)
 head(powTable2)
@@ -241,18 +255,24 @@ tail(powTable2)
 
 findPower(powTable2, "N", power=0.95)
 
-plotPower(Output2, powerParam = "CP=~CP28", 
-          alpha=alpha, useContour=TRUE)
-
-plotPower(Output2, powerParam = "CFI", 
+plotPower(Output2, powerParam = "TP~~SP", 
           alpha=alpha, useContour=TRUE)
 
 ####################################################
 
-Output3 <- sim(NULL, wrongModel, n=50:200, generate=popModel,
+
+Output3 <- sim(NULL, Ho_Model, n=50:200, generate=popModel,
                lavaanfun = "cfa", std.lv=TRUE)
 summary(Output3)
 
+alpha=.05
+
+powTable3 <- getPower(Output3, alpha=alpha)
+head(powTable3)
+tail(powTable3)
+
+plotPower(Output3, powerParam = "TP~SP", 
+          alpha=alpha, useContour=TRUE)
 
 
 
